@@ -81,6 +81,33 @@ dependencies {
 
 - Your google account that are you using for testing should be added to [Google Pay API Test Cards Allowlist](https://groups.google.com/g/googlepay-test-mode-stub-data?pli=1)
 
+### Expo setup
+
+To integrate with Expo custom builds, you need to add the payment plugin from the package into your `app.config.js`:
+
+1. Update your `app.config.js` configuration:
+```js
+export default {
+  expo: {
+    ...
+    ios: {
+      ...
+      infoPlist: {
+        merchant_id: [your_merchant_id],
+      },
+      entitlements: {
+        "com.apple.developer.in-app-payments": [your_merchant_id],
+      },
+      ...
+    },
+    plugins: [
+      ...
+      "@rnw-community/react-native-payments",
+    ],
+  },
+};
+```
+
 ## Usage
 
 Detailed guide should be found at:
@@ -108,11 +135,11 @@ const methodData = [
         supportedMethods: PaymentMethodNameEnum.ApplePay,
         data: {
             merchantIdentifier: 'merchant.com.your-app.namespace',
-            supportedNetworks: [SupportedNetworkEnum.Visa, SupportedNetworkEnum.MasterCard],
+            supportedNetworks: [SupportedNetworkEnum.Visa, SupportedNetworkEnum.Mastercard],
             countryCode: 'US',
             currencyCode: 'USD',
-            requestBilling: true,
-            requestEmail: true,
+            requestBillingAddress: true,
+            requestPayerEmail: true,
             requestShipping: true
         }
     },
@@ -120,12 +147,12 @@ const methodData = [
     {
         supportedMethods: PaymentMethodNameEnum.AndroidPay,
         data: {
-            supportedNetworks: [SupportedNetworkEnum.Visa, SupportedNetworkEnum.MasterCard],
+            supportedNetworks: [SupportedNetworkEnum.Visa, SupportedNetworkEnum.Mastercard],
             environment: EnvironmentEnum.Test,
             countryCode: 'DE',
             currencyCode: 'EUR',
-            requestBilling: true,
-            requestEmail: true,
+            requestBillingAddress: true,
+            requestPayerEmail: true,
             requestShipping: true,
             gatewayConfig: {
                 gateway: 'example',
@@ -153,9 +180,11 @@ const paymentRequest = new PaymentRequest(methodData, paymentDetails);
 Depending on the platform and payment method, you can provide additional data to the `methodData.data` property:
 
 - `environment`: This property represents the Android environment for the payment.
-- `requestBilling`: An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will
+- `requestPayerName`: "An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will include the name of the payer.
+- `requestPayerPhone`: "An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will include the phone of the payer. 
+- `requestBillingAddress`: An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will
   include the billing address of the payer.
-- `requestEmail`: An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will
+- `requestPayerEmail`: An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will
   include the email address of the payer.
 - `requestShipping`: An optional boolean field that, when present and set to true, indicates that the `PaymentResponse` will
   include the shipping address of the payer.
